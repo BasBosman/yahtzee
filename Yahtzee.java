@@ -8,6 +8,7 @@ import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
+import gamedesign.ImageRectangle;
 
 import java.util.ArrayList; 
 
@@ -29,6 +30,9 @@ public class Yahtzee extends BasicGame
 	int playerturn = 0;
 	String input = "";
 	int rerollcount = 0;
+	Speler winner;
+	int roundcount = 0;
+	ArrayList<ImageRectangle> imagerect_clickable_dice = new ArrayList<>();
 	
 	ArrayList<Speler> spelers = new ArrayList<>();
 	Worp worp = new Worp();
@@ -37,7 +41,7 @@ public class Yahtzee extends BasicGame
 	int[] addPts;
 	int selecter= 0;
 	
-	//int ７zeven = 7;
+	//int zeven = ７;
 	
 	@Override
 	public void init(GameContainer gc) throws SlickException 
@@ -58,12 +62,6 @@ public class Yahtzee extends BasicGame
 	@Override
 	public void render(GameContainer gc, Graphics g) throws SlickException
 	{
-		//g.drawString(str, 50, 50);
-		//i++;
-		//g.drawString(Integer.toString(i), 50, 150);
-		//for (int i = 1; i < 7; i++) {
-		//	img.get(i).draw(10 + 60*i, 10);
-		//}
 		switch(mode) {
 		case(1):	
 			g.drawString("Vul aantal spelers in: (max 10)", 50, 50);
@@ -80,10 +78,12 @@ public class Yahtzee extends BasicGame
 		case(4):
 			g.drawString(spelers.get(playerturn).naam + ", dit is uw worp.", 50, 50);
 			g.drawString("Selecteer welke dobbelstenen u wilt behouden.", 50, 65);
+			imagerect_clickable_dice.clear(); //test clickable dice
 			for (int j = 0; j < 5; j++) {
-				img.get(worp.worp.get(j).waarde).draw(10 + 60*j, 100);
+				//img.get(worp.worp.get(j).waarde).draw(40 + 60*j, 100);
+				imagerect_clickable_dice.add(ImageRectangle.drawRect(img.get(worp.worp.get(j).waarde), 40 + 60*j, 100));
 				if (worp.worp.get(j).hold) {
-					imgx.draw(10 + 60*j, 100);
+					imgx.draw(40 + 60*j, 100);
 				}
 			}
 			break;
@@ -94,6 +94,9 @@ public class Yahtzee extends BasicGame
 				img.get(worp.worp.get(j).waarde).draw(40 + 60*j, 100);
 			}
 			setup = true;
+			break;
+		case(6):
+			g.drawString(winner.naam + " heeft het spel gewonnen!", 50, 50);
 			break;
 		}
 		if (setup) {
@@ -111,9 +114,22 @@ public class Yahtzee extends BasicGame
 			} else {g.drawString(">", 10, 195 + 15*selecter);}
 			for (int i = 0; i < numberGames; i++) {
 				for (int j = 0; j < 16; j++) {
-					int printpos = (j < 6 ? j : j + 3);
+					int printpos;
+					switch(j) {
+					case(13):
+						printpos = 6;
+						break;
+					case(14):
+						printpos = 7;
+						break;
+					case(15):
+						printpos = 17;
+						break;
+					default:
+						printpos = (j < 6 ? j : j + 3);
+					}
 					try {
-					g.drawString(Integer.toString( spelers.get(playerturn).score.get(j).get(i) 
+						g.drawString(Integer.toString( spelers.get(playerturn).score.get(j).get(i) 
 							), 195 + 45*i, 150 + 15*printpos);
 					} catch (IndexOutOfBoundsException exception) {
 						g.drawString("-", 195 + 45*i, 150 + 15*printpos);
@@ -201,9 +217,12 @@ public class Yahtzee extends BasicGame
 					spelers.get(playerturn).calcTotal(numberGames);
 					if (playerturn == numberPlayers - 1) {
 						playerturn = 0;
-					} else {playerturn += 1;}					
-					mode = 4;
-					playGame1();
+						roundcount++;
+					} else {playerturn += 1;}
+					if (roundcount != 13 * numberGames) {
+						mode = 4;
+						playGame1();
+					} else {determineWinner(); mode = 6;}
 				}
 			}
 			
@@ -211,13 +230,17 @@ public class Yahtzee extends BasicGame
 		}
 	
 		public void mouseClicked(int button, int x, int y, int clickCount) {
-			if (clickCount == 1) {
-				str = "Single Click: "+button+" "+x+","+y;
-			}
-			if (clickCount == 2) {
-				str = "Double Click: "+button+" "+x+","+y;
+			if (mode == 4) {
+				//check mouse collision
+				for (int i = 0; i < 5; i++) {
+					if (imagerect_clickable_dice.get(i).checkCollision(x,y)) {
+						worp.worp.get(i).hold = !worp.worp.get(i).hold;
+					}
+				}
+	
 			}
 		}
+		
 		int getOutput(String in, int max) {
 			int out = Integer.parseInt(in);
 			if (out < max) {
@@ -241,6 +264,15 @@ public class Yahtzee extends BasicGame
 			if (playerturn == numberPlayers - 1) {
 				playerturn = 0;
 			} else {playerturn += 1;}
+		}
+		void determineWinner() {
+			winner = new Speler("");
+			winner.grandTotal = 0;
+			for (Speler i : spelers) {
+				if (i.grandTotal > winner.grandTotal) {
+					winner = i;
+				}
+			}
 		}
 	}
 //⚀ ⚁ ⚂ ⚃ ⚄ ⚅

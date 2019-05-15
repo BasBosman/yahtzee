@@ -47,5 +47,4 @@ public class Speler {
 			return score.get(i).get(j);
 		} catch(IndexOutOfBoundsException exception) {return 0;}
 	}
-	
 }
