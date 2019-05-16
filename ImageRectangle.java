@@ -28,16 +28,16 @@ public class ImageRectangle {
 		if (locs[0] > minx && locs[0] < maxx && locs[1] > miny && locs[1] < maxy) {return true;} 		
 		if (locs[0] > minx && locs[0] < maxx && locs[3] > miny && locs[3] < maxy) {return true;}
 		if (locs[2] > minx && locs[2] < maxx && locs[1] > miny && locs[1] < maxy) {return true;} 		
-		if (locs[0] > minx && locs[0] < maxx && locs[3] > miny && locs[3] < maxy) {return true;}
+		if (locs[2] > minx && locs[2] < maxx && locs[3] > miny && locs[3] < maxy) {return true;}
 		return false;
 	}
 	//check if another imgrect is inside (all 4 corners must be inside)
 	public boolean checkInisde(ImageRectangle imgrect) {
 		int[] locs = imgrect.getLocation();
 		if (locs[0] > minx && locs[0] < maxx && locs[1] > miny && locs[1] < maxy &&	
-			locs[0] > minx && locs[0] < maxx && locs[3] > miny && locs[3] < maxy &&
-			locs[2] > minx && locs[2] < maxx && locs[1] > miny && locs[1] < maxy &&	
-			locs[0] > minx && locs[0] < maxx && locs[3] > miny && locs[3] < maxy) {return true;}
+			//locs[0] > minx && locs[0] < maxx && locs[3] > miny && locs[3] < maxy &&
+			//locs[2] > minx && locs[2] < maxx && locs[1] > miny && locs[1] < maxy &&	
+			locs[2] > minx && locs[2] < maxx && locs[3] > miny && locs[3] < maxy) {return true;}
 		return false;
 	}
 	//this static method draws a new image and assigns a 
