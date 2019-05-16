@@ -9,7 +9,7 @@ public class ImageRectangle {
 	private int maxx;
 	private int maxy;
 	private Image img;
-	ImageRectangle(Image img, int imx, int imy){
+	public ImageRectangle(Image img, int imx, int imy){
 		this.img = img;
 		minx = imx;
 		miny = imy;
@@ -31,7 +31,7 @@ public class ImageRectangle {
 		if (locs[2] > minx && locs[2] < maxx && locs[3] > miny && locs[3] < maxy) {return true;}
 		return false;
 	}
-	//check if another imgrect is inside (all 4 corners must be inside)
+	//check if another imgrect is inside (all 4 corners must be inside, or both 2 opposing corners)
 	public boolean checkInisde(ImageRectangle imgrect) {
 		int[] locs = imgrect.getLocation();
 		if (locs[0] > minx && locs[0] < maxx && locs[1] > miny && locs[1] < maxy &&	
